@@ -45,8 +45,6 @@ int main(int argc, char *argv[])
         str[a]=*s;
         a++;
     }
-    
-    char myarray[5] = {'-', '1', '2', '3', '\0'};
     int i;
     sscanf(str, "%d", &i);
     printf("Got the Number %d",i);
