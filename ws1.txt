@@ -1,0 +1,70 @@
+passwd : The passwd command changes passwords for user accounts.
+find : used to find files and directories and perform subsequent operations on them.
+
+find /home/surya/Desktop -name mini_pro.c
+
+    /home/surya/Desktop/OS/mini_pro.c
+
+find ./GFG -name *.txt 
+
+How to find and delete a file with confirmation.
+    find ./GFG -name sample.txt -exec rm -i {} \;   
+Search text within multiple files.
+    find ./ -type f -name "*.txt" -exec grep 'Geek'  {} \;
+
+head -n 20 server.c | tail -n 5
+
+Displaying the count of number of matches : 
+    grep -c "unix" geekfile.txt
+Display the file names that matches the pattern :
+    grep -l "unix" *
+Checking for the whole words in a file : 
+    grep -w "unix" geekfile.txt
+Displaying only the matched pattern :
+    grep -o "unix" geekfile.txt
+Show line number while displaying the output using grep -n: 
+    grep -n "unix" geekfile.txt
+Display the lines that are not matched with the specified search sting
+    grep -v "unix" geekfile.txt
+Matching the lines that start with a string : 
+    grep "^unix" geekfile.txt
+Matching the lines that end with a string :
+    grep "os$" geekfile.txt
+Specifies expression with -e option. Can use multiple times :
+    grep –e "Agarwal" –e "Aggarwal" –e "Agrawal" geekfile.txt
+
+sed command removes the second line in a file. 
+    sed '2d' file
+Delete range of lines:
+    sed '2,4d' file
+Delete lines other than the specified range
+    sed '2,4!d' file
+Delete empty lines or blank lines
+    sed '/^$/d' file
+Delete lines that begin with specified character
+    sed '/^u/d' file
+Delete lines that contain a pattern
+    sed '/debian/d' file
+Delete last line only if it contains the pattern
+    sed '${/ubuntu/d;}' file    Here $ indicates the last line. If you want to delete Nth line only if it contains a pattern, then in place of $ place the line number. 
+
+display the complete content of the file using AWK
+    awk '{print}' marks.txt 
+awk -v name=Jerry 'BEGIN{printf "Name = %s\n", name}'
+
+Printing Column or Field:
+    awk '{print $3 "\t" $4}' marks.txt
+AWK prints all the lines that match pattern :
+    awk '/a/ {print $0}' marks.txt
+Counting and Printing Matched Pattern : 
+    awk '/a/{++cnt} END {print "Count = ", cnt}' marks.txt
+Printing Lines with More than 18 Characters : 
+    awk 'length($0) > 18' marks.txt
+prints the lines that end with the letter n : 
+    echo -e "knife\nknow\nfun\nfin\nfan\nnine" | awk '/n$/'
+The following example matches pattern Call and Tall but not Ball. : 
+    echo -e "Call\nTall\nBall" | awk '/[CT]all/'
+Zero or One Occurrence
+    echo -e "Colour\nColor" | awk '/Colou?r/'
+Use cat, grep, tee and wc command to read the particular entry from user and store in a file and print line count.
+    cat result.txt | grep "Rajat Dua" | tee file2.txt | wc -l
