@@ -1,0 +1,132 @@
+#!/bin/bash
+FILENAME="party.txt" 
+while true do
+        echo "*MENU*"
+        echo -e "1.ADD NEW LINE\n2.DELETE A LINE\n3.CONVERT NAME TO UPPER CASE \n4.Read percent of tax as integer and subtract the tax from their contributions in each month. \n5.GIVE A REPOR$
+        echo "ENTER YOUR CHOICE:"
+        read ch         #getting input from the user
+        case "$ch" in   #switching according to the case
+                1) echo "ENTER THE NEW LINE:"
+                        read line
+                        phoneno=$(echo $line|cut -d ':' -f 2)    #checking if a phone number exist or not
+                        FLAG=`awk '{FS=":"} {if ($2 == "$phoneno") sum=1} END{print sum}' party.txt`
+                        echo $FLAG
+                        if [ "$FLAG" == 1 ]
+                        then
+                                echo "PHONE NUMBER ALREADY EXISTS!"
+                        else
+                                echo "$line" >> party.txt        #apending the number to the file
+                        fi;;
+                2)
+                        echo "ENTER LINE:"
+                        read line
+                        name=$(echo $line|cut -d ':' -f 1)      #finding the line
+                        sed -n '/$line/d' party.txt             #deleting the line
+                        echo "DONE";;
+                4)echo "ENTER TAX PERCENT:"
+                        read line
+                        line = $((line/100))
+                        awk '{FS=":"} {if ($3=`expr $3 - $3\*$line`} END{print sum}' party.txt;;
+                6) exit 0;;
+                esac
+done
+
+
+/////////////////////////////////////////QUESTION 2///////////////////////////////////////////////////
+
+
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
+
+sem_t semaphore0;
+sem_t semaphore1;
+sem_t semaphore2;
+
+sem_t sem_arr;
+int B0;
+int B1;
+int flag=1;
+int arr[1000];
+int len=0;
+
+void* processP0(void* arg) {
+    for(int i=1;i<=1000;i++) {
+        //wait so that B0 will not be used by other process
+        sem_wait(&semaphore0);
+        B0=i;
+        //signal so that p1 can use B0
+        sem_post(&semaphore1);
+    }
+     flag=0;
+     sem_post(&semaphore1);
+     sem_post(&semaphore2);
+    return NULL;
+}
+void* processP1(void* arg) {
+    while(flag) {
+        //wait so P0 will not use B0
+        sem_wait(&semaphore1);
+        if((B0%2)!=0) {
+            B1=B0;
+            //signal so p2 can use the B1
+            sem_post(&semaphore2);
+        }
+        else {
+            //signal so that B0 can post the next element
+            sem_post(&semaphore0);
+        }
+    }
+    return NULL;
+}
+void* processP2(void* arg) {
+    while(flag) {
+        //wait so that  B1 will not be used by p1
+        sem_wait(&semaphore2);
+        if((B1%3)!=0) {
+	            printf("%d ",B1);
+        }
+        //signal so that Bo can post the next element
+        sem_post(&semaphore0);
+    }
+    return NULL;
+}
+
+void* processP2(void* arg) {
+    while(flag) {
+        //wait so that  B1 will not be used by p1
+        sem_wait(&semaphore2);
+        if((B1%3)!=0) {
+            sem_wait(&sem_arr);
+            len++;
+            arr[len]=B1;
+            sem_post(&sem_arr);
+        }
+        //signal so that Bo can post the next element
+        sem_post(&semaphore0);
+    }
+    return NULL;
+}
+int main() {
+    sem_init(&semaphore0, 0, 1);
+    sem_init(&semaphore1, 0, 0);
+    sem_init(&semaphore2, 0, 0);
+    sem_init(&sem_arr,0,1);
+    pthread_t p0,p1,p2;
+    pthread_create(&p0,NULL,processP0,NULL);
+    pthread_create(&p1,NULL,processP1,NULL);
+    pthread_create(&p2,NULL,processP2,NULL);
+    pthread_join(p0,NULL);
+    pthread_join(p1,NULL);
+    pthread_join(p2,NULL);
+    printf("\n");
+    sem_destroy(&semaphore0);
+    sem_destroy(&semaphore1);
+    sem_destroy(&semaphore2);
+    for(int i=0;i<=len;i++)
+        printf("  %d  ",arr[i]);
+    //printf("Len of the arr : %d",len);
+    printf("\n");
+    return 0;
+}
